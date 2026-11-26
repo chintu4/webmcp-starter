@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebMCP Declarative Form Example</title>
+</head>
+<body>
+  <form
+    action="/search"
+    method="GET"
+    toolname="search_flights"
+    tooldescription="Search for available one-way flights between two airport codes."
+  >
+    <label>Origin: <input type="text" name="origin" required pattern="[A-Z]{3}" toolparamdescription="3-letter IATA code (e.g., HYD, DEL)" /></label>
+    <label>Destination: <input type="text" name="destination" required pattern="[A-Z]{3}" toolparamdescription="3-letter IATA code (e.g., BLR, BOM)" /></label>
+    <label>Cabin:
+      <select name="cabin" toolparamdescription="Preferred seating class">
+        <option value="economy">Economy</option>
+        <option value="business">Business</option>
+      </select>
+    </label>
+    <button type="submit">Search Flights</button>
+  </form>
+  <p id="result"></p>
+  <script>
+    document.querySelector('form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const d = Object.fromEntries(new FormData(e.target));
+      const summary = `Searching ${d.cabin} flights from ${d.origin} to ${d.destination} (agentInvoked: ${Boolean(e.agentInvoked)})`;
+      document.getElementById('result').textContent = summary;
+      if (e.agentInvoked && typeof e.respondWith === 'function') {
+        e.respondWith(Promise.resolve({ content: [{ type: 'text', text: summary }] }));
+      }
+    });
+  </script>
+</body>
+</html>
