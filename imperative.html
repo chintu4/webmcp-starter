@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebMCP Imperative Example</title>
+</head>
+<body>
+  <h2 id="status">Cart Total: $0</h2>
+  <script>
+    let cartTotal = 0;
+    if ('modelContext' in document) {
+      document.modelContext.registerTool({
+        name: 'add_to_cart',
+        description: 'Adds an item with a specified price to the shopping cart.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            itemName: { type: 'string', description: 'Name of the product to add' },
+            price: { type: 'number', description: 'Price of a single unit in USD' },
+            quantity: { type: 'integer', description: 'Number of units to add', default: 1 }
+          },
+          required: ['itemName', 'price']
+        },
+        execute: async ({ itemName, price, quantity = 1 }) => {
+          cartTotal += price * quantity;
+          document.getElementById('status').textContent = `Cart Total: $${cartTotal}`;
+          return { content: [{ type: 'text', text: `Added ${quantity}x ${itemName} ($${price} each). New cart total is $${cartTotal}.` }] };
+        }
+      });
+    }
+  </script>
+</body>
+</html>
